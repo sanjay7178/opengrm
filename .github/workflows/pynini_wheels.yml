@@ -29,7 +29,10 @@ jobs:
           repository-cache: true
       - name: Build and test Pynini with Bazel
         run: |
-          bazelisk build -c opt --build_python_zip //opengrm/pynini:wheel_inputs
+          bazelisk build -c opt --build_python_zip \
+            //opengrm/pynini:wheel_inputs \
+            //opengrm/pynini:pynini_main_cc_shared \
+            @com_google_openfst//openfst/extensions/python:pywrapfst_main_cc_shared
           bazelisk test -c opt --test_output=errors //opengrm/pynini:pynini_test
       - name: Build wheel
         run: |
@@ -39,9 +42,10 @@ jobs:
             wheelhouse --sha "$GITHUB_SHA"
           mkdir -p runfiles dist
           python -m zipfile -e bazel-bin/opengrm/pynini/wheel_inputs.zip runfiles
-          mapfile -d '' native_dirs < <(find runfiles -type f -name '*.so*' -printf '%h\0' | sort -zu)
+          test -n "$(find -L bazel-bin -name 'libpywrapfst_main_cc_shared.so' -print -quit)"
+          mapfile -d '' native_dirs < <(find -L bazel-bin runfiles -type f -name '*.so*' -printf '%h\0' | sort -zu)
           IFS=:
-          export LD_LIBRARY_PATH="${native_dirs[*]}"
+          export LD_LIBRARY_PATH="${native_dirs[*]}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           unset IFS
           auditwheel repair wheelhouse/*.whl --wheel-dir dist
           test "$(find dist -maxdepth 1 -name '*.whl' | wc -l)" -eq 1
