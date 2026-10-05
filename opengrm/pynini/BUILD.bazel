@@ -14,6 +14,7 @@
 
 load("@com_google_openfst//:bazel/cython_build_defs.bzl", "pyx_library")
 load("@rules_python//python:py_library.bzl", "py_library")
+load("@rules_python//python:py_binary.bzl", "py_binary")
 load("@rules_python//python:py_test.bzl", "py_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -63,6 +64,13 @@ pyx_library(
     py_deps = ["@com_google_openfst//openfst:pywrapfst"],
     pyi_deps = ["@com_google_openfst//openfst:pywrapfst"],
     pyi_srcs = ["pynini.pyi"],
+)
+
+# A Python executable gives us a zip of the Bazel runfiles needed by the wheel.
+py_binary(
+    name = "wheel_inputs",
+    srcs = ["wheel_inputs.py"],
+    deps = [":pynini"],
 )
 
 # Python-based unit tests.

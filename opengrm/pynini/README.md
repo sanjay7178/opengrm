@@ -25,3 +25,19 @@ For some more context, see
 [How to get superior text processing in Python with Pynini](https://www.oreilly.com/ideas/how-to-get-superior-text-processing-in-python-with-pynini)
 and
 [Pynini: A Python library for weighted finite-state grammar compilation](http://openfst.cs.nyu.edu/twiki/pub/GRM/Pynini/pynini-paper.pdf).
+
+## CI wheels
+
+Every push to `main` builds a CPython 3.12 Linux x86-64 wheel with Bazel. The
+wheel is available under the **Artifacts** section of that commit's **Pynini
+wheels** Actions run. Download the artifact, unzip it, and install the wheel
+with `python -m pip install path/to/opengrm_pynini-*.whl` using CPython 3.12.
+The installed module is imported as `from opengrm.pynini import pynini`.
+
+The same wheel is also stored in GitHub Packages as a GHCR container image
+tagged `ghcr.io/OWNER/REPO/pynini-wheels:sha-COMMIT_SHA`. For example, after
+`docker pull`, use `docker create` and `docker cp CONTAINER:/wheels/. ./wheels/`
+to copy the wheel out of the image. GitHub Packages has no Python package
+registry, so the GHCR package stores the wheel file rather than serving a pip
+index. Actions artifacts follow the repository's artifact retention policy;
+the SHA-tagged GHCR package provides a persistent copy.
