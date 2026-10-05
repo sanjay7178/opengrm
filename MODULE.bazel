@@ -42,6 +42,12 @@ bazel_dep(
     name = "rules_python",
     version = "2.2.0",
 )
+
+# Keep compiled Python extensions and the interpreter on the same ABI.
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.defaults(python_version = "3.11")
+python.toolchain(python_version = "3.11")
+python.toolchain(python_version = "3.12")
 bazel_dep(
     name = "rules_bison",
     version = "0.4.bcr.1"

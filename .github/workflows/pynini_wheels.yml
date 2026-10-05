@@ -29,11 +29,13 @@ jobs:
           repository-cache: true
       - name: Build and test Pynini with Bazel
         run: |
-          bazelisk build -c opt --build_python_zip \
+          bazelisk build -c opt --@rules_python//python/config_settings:python_version=3.12 \
+            --build_python_zip \
             //opengrm/pynini:wheel_inputs \
             //opengrm/pynini:pynini_main_cc_shared \
             @com_google_openfst//openfst/extensions/python:pywrapfst_main_cc_shared
-          bazelisk test -c opt --test_output=errors //opengrm/pynini:pynini_test
+          bazelisk test -c opt --@rules_python//python/config_settings:python_version=3.12 \
+            --test_output=errors //opengrm/pynini:pynini_test
       - name: Build wheel
         run: |
           python -m pip install --upgrade wheel auditwheel patchelf
