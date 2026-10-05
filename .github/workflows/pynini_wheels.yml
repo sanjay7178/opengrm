@@ -43,7 +43,8 @@ jobs:
           mkdir -p runfiles dist
           python -m zipfile -e bazel-bin/opengrm/pynini/wheel_inputs.zip runfiles
           test -n "$(find -L bazel-bin -name 'libpywrapfst_main_cc_shared.so' -print -quit)"
-          mapfile -d '' native_dirs < <(find -L bazel-bin runfiles -type f -name '*.so*' -printf '%h\0' | sort -zu)
+          mapfile -d '' native_dirs < <(find -L "$(realpath bazel-bin)" "$(realpath runfiles)" \
+            -type f -name '*.so*' -printf '%h\0' | sort -zu)
           IFS=:
           export LD_LIBRARY_PATH="${native_dirs[*]}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           unset IFS
